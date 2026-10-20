@@ -1,3 +1,8 @@
+/* =========================================================
+   TransactionGuard - style.css
+   All original rules preserved; new additions are clearly
+   marked with "-- NEW --" comments.
+   ========================================================= */
 
 * {
     box-sizing: border-box;
@@ -11,12 +16,14 @@ body {
     line-height: 1.6;
 }
 
+/* ── Topbar ─────────────────────────────────────────── */
 .topbar {
     padding: 20px 5%;
     background: #0e1527;
     border-bottom: 1px solid #26334c;
     display: flex;
     justify-content: space-between;
+    align-items: center;
     gap: 16px;
 }
 
@@ -38,6 +45,7 @@ body {
     font-size: 12px;
 }
 
+/* ── Layout ─────────────────────────────────────────── */
 .container {
     width: 90%;
     max-width: 1120px;
@@ -53,6 +61,15 @@ h1 {
     margin: 8px 0;
 }
 
+h2 {
+    margin: 8px 0 16px;
+}
+
+h3 {
+    margin: 0 0 8px;
+    font-size: 18px;
+}
+
 .subtitle,
 .muted,
 .metric-card p,
@@ -61,6 +78,7 @@ h1 {
     color: #9aa9c3;
 }
 
+/* ── Metric cards ────────────────────────────────────── */
 .metrics {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -81,8 +99,10 @@ h1 {
 .metric-card h2 {
     font-size: 28px;
     overflow-wrap: anywhere;
+    margin: 4px 0 0;
 }
 
+/* ── Details / model grids ───────────────────────────── */
 .details-grid,
 .model-grid {
     display: grid;
@@ -100,11 +120,19 @@ h1 {
     margin-top: 28px;
 }
 
+/* ── Pills ───────────────────────────────────────────── */
 .pending {
     color: #f2c879;
     font-size: 13px;
 }
 
+/* -- NEW -- ready pill */
+.ready {
+    color: #5dd87b;
+    font-size: 13px;
+}
+
+/* ── Notices ─────────────────────────────────────────── */
 .notice {
     color: #c6d1e5;
 }
@@ -113,6 +141,7 @@ h1 {
     border-color: #a84d5c;
 }
 
+/* ── Footer ──────────────────────────────────────────── */
 footer {
     padding: 24px;
     text-align: center;
@@ -120,23 +149,263 @@ footer {
     font-size: 12px;
 }
 
+/* -- NEW -- Inline model evaluation table inside panel */
+.metrics-table {
+    margin-top: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.metric-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    border-bottom: 1px solid #26334c;
+    padding: 4px 0;
+    color: #c6d1e5;
+}
+
+.metric-row strong {
+    color: #f1f5ff;
+    font-variant-numeric: tabular-nums;
+}
+
+.train-hint {
+    margin-top: 12px;
+    font-size: 13px;
+}
+
+.train-hint code {
+    background: #0b1020;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: "Consolas", monospace;
+    color: #6ea8fe;
+    font-size: 12px;
+}
+
+/* -- NEW -- Predict form */
+.predict-panel {
+    margin-bottom: 24px;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 10px;
+    margin: 18px 0;
+}
+
+.feature-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.feature-input-group label {
+    font-size: 11px;
+    color: #9aa9c3;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+}
+
+.feature-input-group input {
+    background: #0b1020;
+    border: 1px solid #26334c;
+    border-radius: 8px;
+    color: #f1f5ff;
+    padding: 7px 10px;
+    font-size: 13px;
+    font-family: "Consolas", monospace;
+    width: 100%;
+    transition: border-color 0.15s;
+}
+
+.feature-input-group input:focus {
+    outline: none;
+    border-color: #6ea8fe;
+}
+
+/* -- NEW -- Form action buttons */
+.form-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-ghost {
+    border: none;
+    border-radius: 8px;
+    padding: 9px 20px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+}
+
+.btn-primary {
+    background: #6ea8fe;
+    color: #0b1020;
+    font-weight: 700;
+}
+
+.btn-secondary {
+    background: #26334c;
+    color: #f1f5ff;
+}
+
+.btn-ghost {
+    background: transparent;
+    color: #9aa9c3;
+    border: 1px solid #26334c;
+}
+
+.btn-primary:hover,
+.btn-secondary:hover,
+.btn-ghost:hover {
+    opacity: 0.85;
+    transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* -- NEW -- Prediction result box */
+.predict-result {
+    margin-top: 20px;
+    border: 1px solid #26334c;
+    border-radius: 12px;
+    padding: 20px;
+    background: #0f1829;
+}
+
+.predict-result.hidden {
+    display: none;
+}
+
+.result-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 16px;
+}
+
+.result-card {
+    background: #141c30;
+    border: 1px solid #26334c;
+    border-radius: 10px;
+    padding: 16px;
+}
+
+.result-card.flagged {
+    border-color: #a84d5c;
+}
+
+.result-card.clear {
+    border-color: #2d6a41;
+}
+
+.result-card h4 {
+    margin: 0 0 8px;
+    font-size: 14px;
+    color: #9aa9c3;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.result-verdict {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.flagged .result-verdict { color: #f87171; }
+.clear .result-verdict   { color: #5dd87b; }
+
+.result-score {
+    font-size: 12px;
+    color: #9aa9c3;
+    font-family: "Consolas", monospace;
+}
+
+.result-note {
+    font-size: 11px;
+    color: #6c7d9c;
+    margin-top: 8px;
+    line-height: 1.4;
+}
+
+.deviations-list {
+    font-size: 12px;
+    color: #c6d1e5;
+    margin-top: 10px;
+}
+
+.deviations-list h4 {
+    margin: 0 0 8px;
+    font-size: 13px;
+    color: #9aa9c3;
+}
+
+.deviation-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 3px 0;
+    border-bottom: 1px solid #1e2a40;
+    font-family: "Consolas", monospace;
+}
+
+.deviation-row span:last-child {
+    color: #f2c879;
+}
+
+.result-disclaimer {
+    margin-top: 14px;
+    font-size: 11px;
+    color: #6c7d9c;
+    border-top: 1px solid #26334c;
+    padding-top: 10px;
+    line-height: 1.5;
+}
+
+.error-msg {
+    color: #f87171;
+    font-size: 14px;
+}
+
+/* ── Responsive ──────────────────────────────────────── */
 @media (max-width: 700px) {
     .metrics {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .details-grid,
-    .model-grid {
+    .model-grid,
+    .result-grid {
         grid-template-columns: 1fr;
     }
 
     h1 {
         font-size: 28px;
     }
+
+    .feature-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 @media (max-width: 450px) {
     .metrics {
+        grid-template-columns: 1fr;
+    }
+
+    .feature-grid {
         grid-template-columns: 1fr;
     }
 }

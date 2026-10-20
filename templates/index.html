@@ -1,27 +1,45 @@
-
+<!--
+  TransactionGuard - index.html
+  Preserves all original design tokens, layout and CSS classes.
+  Additions:
+    - model_status section shows live RF / IF training results
+    - Predict form sends POST /api/predict and renders results inline
+    - One new <script src="static/js/app.js"> at the bottom
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TransactionGuard - Credit card fraud detection dashboard powered by Random Forest and Isolation Forest models.">
     <title>TransactionGuard | Dashboard</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <header class="topbar">
         <a class="brand" href="/">Transaction<span>Guard</span></a>
-        <span class="status">Development Mode</span>
+        <span class="status">
+            {% if model_status.trained %}
+                <span class="pill ready">Models ready</span>
+            {% else %}
+                <span class="pill pending">Models not trained</span>
+            {% endif %}
+        </span>
     </header>
 
     <main class="container">
+
+        <!-- ── Hero ─────────────────────────────────────────────── -->
         <section class="hero">
             <p class="eyebrow">TRANSACTION INTELLIGENCE</p>
             <h1>Fraud Detection Dashboard</h1>
             <p class="subtitle">
-                Explore transaction data and prepare your machine-learning models.
+                Explore transaction data, run ML models, and screen individual transactions.
             </p>
         </section>
 
+        <!-- ── Dataset error notice ──────────────────────────────── -->
         {% if error %}
         <section class="notice error">
             <h2>Dataset needs attention</h2>
@@ -29,6 +47,7 @@
         </section>
         {% endif %}
 
+        <!-- ── Dataset stats cards ───────────────────────────────── -->
         {% if stats %}
         <section class="metrics">
             <article class="metric-card">
@@ -65,43 +84,134 @@
                     <span>Average transaction amount</span>
                     <strong>{{ "%.2f"|format(stats.average_amount) }}</strong>
                 </div>
+                <div class="detail">
+                    <span>Dataset file</span>
+                    <strong>{{ stats.dataset_file }}</strong>
+                </div>
             </div>
             <p class="muted">
-                Amounts use the dataset's original units. V1–V28 are anonymized features.
+                Amounts use the dataset's original units. V1–V28 are anonymized PCA features.
             </p>
         </section>
         {% endif %}
 
+        <!-- ── ML model status ───────────────────────────────────── -->
         <section class="section-heading">
             <div>
-                <p class="eyebrow">NEXT DEVELOPMENT STAGE</p>
-                <h2>Machine-learning models</h2>
+                <p class="eyebrow">MACHINE-LEARNING MODELS</p>
+                <h2>Model status &amp; evaluation</h2>
             </div>
         </section>
 
         <section class="model-grid">
             <article class="panel">
                 <h3>Random Forest</h3>
-                <p>Supervised classification using labeled examples.</p>
-                <span class="pill pending">Not trained yet</span>
+                <p>Supervised classification trained on labeled examples.</p>
+                {% if model_status.trained and model_status.rf_metrics %}
+                    <span class="pill ready">Trained</span>
+                    <div class="metrics-table">
+                        <div class="metric-row">
+                            <span>Fraud precision</span>
+                            <strong>{{ "%.4f"|format(model_status.rf_metrics.precision) }}</strong>
+                        </div>
+                        <div class="metric-row">
+                            <span>Fraud recall</span>
+                            <strong>{{ "%.4f"|format(model_status.rf_metrics.recall) }}</strong>
+                        </div>
+                        <div class="metric-row">
+                            <span>Fraud F1-score</span>
+                            <strong>{{ "%.4f"|format(model_status.rf_metrics.f1_score) }}</strong>
+                        </div>
+                        <div class="metric-row">
+                            <span>Avg precision (PR-AUC)</span>
+                            <strong>{{ "%.4f"|format(model_status.rf_metrics.average_precision) }}</strong>
+                        </div>
+                        <div class="metric-row">
+                            <span>Test set size</span>
+                            <strong>{{ "{:,}".format(model_status.rf_metrics.test_size) }} rows</strong>
+                        </div>
+                    </div>
+                {% else %}
+                    <span class="pill pending">Not trained yet</span>
+                    <p class="muted train-hint">Run <code>python train_models.py</code> then restart Flask.</p>
+                {% endif %}
             </article>
+
             <article class="panel">
                 <h3>Isolation Forest</h3>
                 <p>Unsupervised detection of unusual transaction patterns.</p>
-                <span class="pill pending">Not trained yet</span>
+                {% if model_status.trained and model_status.iso_metrics %}
+                    <span class="pill ready">Trained</span>
+                    <div class="metrics-table">
+                        <div class="metric-row">
+                            <span>Fraud precision*</span>
+                            <strong>{{ "%.4f"|format(model_status.iso_metrics.precision) }}</strong>
+                        </div>
+                        <div class="metric-row">
+                            <span>Fraud recall*</span>
+                            <strong>{{ "%.4f"|format(model_status.iso_metrics.recall) }}</strong>
+                        </div>
+                        <div class="metric-row">
+                            <span>Fraud F1-score*</span>
+                            <strong>{{ "%.4f"|format(model_status.iso_metrics.f1_score) }}</strong>
+                        </div>
+                        <div class="metric-row">
+                            <span>Test set size</span>
+                            <strong>{{ "{:,}".format(model_status.iso_metrics.test_size) }} rows</strong>
+                        </div>
+                    </div>
+                    <p class="muted">* Labels used for evaluation only – not during training.</p>
+                {% else %}
+                    <span class="pill pending">Not trained yet</span>
+                    <p class="muted train-hint">Run <code>python train_models.py</code> then restart Flask.</p>
+                {% endif %}
             </article>
         </section>
 
+        <!-- ── Transaction predict form ──────────────────────────── -->
+        {% if model_status.trained %}
+        <section class="section-heading">
+            <div>
+                <p class="eyebrow">LIVE SCREENING</p>
+                <h2>Screen a transaction</h2>
+            </div>
+        </section>
+
+        <section class="panel predict-panel">
+            <p class="muted">
+                Enter the 30 feature values for a transaction. <strong>Do not enter the Class label</strong> –
+                that is the prediction target. Results are a screening signal, not proof of fraud.
+            </p>
+
+            <form id="predict-form" autocomplete="off">
+                <div class="feature-grid" id="feature-inputs">
+                    <!-- Inputs rendered by app.js -->
+                </div>
+                <div class="form-actions">
+                    <button type="submit" id="predict-btn" class="btn-primary">Screen transaction</button>
+                    <button type="button" id="fill-sample-btn" class="btn-secondary">Fill sample values</button>
+                    <button type="button" id="clear-btn" class="btn-ghost">Clear</button>
+                </div>
+            </form>
+
+            <div id="predict-result" class="predict-result hidden"></div>
+        </section>
+        {% endif %}
+
+        <!-- ── Disclaimer ────────────────────────────────────────── -->
         <section class="notice">
             <strong>Important</strong>
             <p>
                 This is a student development project, not a live banking
-                fraud detector. A flagged transaction requires review;
-                it does not prove fraud.
+                fraud detector. A flagged transaction requires human review;
+                it does not prove fraud. V1–V28 are anonymized PCA features
+                with no direct real-world meaning.
             </p>
         </section>
 
-        <footer>TransactionGuard · Student ML project</footer>
+        <footer>TransactionGuard &middot; Student ML project</footer>
     </main>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 </html>
