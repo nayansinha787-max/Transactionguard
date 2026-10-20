@@ -1,0 +1,107 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TransactionGuard | Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="/">Transaction<span>Guard</span></a>
+        <span class="status">Development Mode</span>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <p class="eyebrow">TRANSACTION INTELLIGENCE</p>
+            <h1>Fraud Detection Dashboard</h1>
+            <p class="subtitle">
+                Explore transaction data and prepare your machine-learning models.
+            </p>
+        </section>
+
+        {% if error %}
+        <section class="notice error">
+            <h2>Dataset needs attention</h2>
+            <p>{{ error }}</p>
+        </section>
+        {% endif %}
+
+        {% if stats %}
+        <section class="metrics">
+            <article class="metric-card">
+                <p>Total transactions</p>
+                <h2>{{ "{:,}".format(stats.total) }}</h2>
+            </article>
+            <article class="metric-card">
+                <p>Genuine transactions</p>
+                <h2>{{ "{:,}".format(stats.genuine) }}</h2>
+            </article>
+            <article class="metric-card">
+                <p>Labeled fraud cases</p>
+                <h2>{{ "{:,}".format(stats.fraud) }}</h2>
+            </article>
+            <article class="metric-card">
+                <p>Fraud percentage</p>
+                <h2>{{ "%.3f"|format(stats.fraud_rate) }}%</h2>
+            </article>
+        </section>
+
+        <section class="panel">
+            <p class="eyebrow">DATA QUALITY</p>
+            <h2>Dataset overview</h2>
+            <div class="details-grid">
+                <div class="detail">
+                    <span>Number of columns</span>
+                    <strong>{{ stats.total_columns }}</strong>
+                </div>
+                <div class="detail">
+                    <span>Missing required cells</span>
+                    <strong>{{ stats.missing_cells }}</strong>
+                </div>
+                <div class="detail">
+                    <span>Average transaction amount</span>
+                    <strong>{{ "%.2f"|format(stats.average_amount) }}</strong>
+                </div>
+            </div>
+            <p class="muted">
+                Amounts use the dataset's original units. V1–V28 are anonymized features.
+            </p>
+        </section>
+        {% endif %}
+
+        <section class="section-heading">
+            <div>
+                <p class="eyebrow">NEXT DEVELOPMENT STAGE</p>
+                <h2>Machine-learning models</h2>
+            </div>
+        </section>
+
+        <section class="model-grid">
+            <article class="panel">
+                <h3>Random Forest</h3>
+                <p>Supervised classification using labeled examples.</p>
+                <span class="pill pending">Not trained yet</span>
+            </article>
+            <article class="panel">
+                <h3>Isolation Forest</h3>
+                <p>Unsupervised detection of unusual transaction patterns.</p>
+                <span class="pill pending">Not trained yet</span>
+            </article>
+        </section>
+
+        <section class="notice">
+            <strong>Important</strong>
+            <p>
+                This is a student development project, not a live banking
+                fraud detector. A flagged transaction requires review;
+                it does not prove fraud.
+            </p>
+        </section>
+
+        <footer>TransactionGuard · Student ML project</footer>
+    </main>
+</body>
+</html>

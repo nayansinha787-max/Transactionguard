@@ -1,0 +1,25 @@
+# Python virtual environment
+.venv/
+venv/
+ENV/
+env/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Full local dataset (exceeds GitHub 100MB limit; sample provided in data/creditcard.csv)
+data/creditcard_full.csv
+*.csv.zip
+*.csv.gz
+
+# Environment variables
+.env
+.env.local
+
+# IDE and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
